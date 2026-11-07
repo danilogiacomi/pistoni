@@ -3,6 +3,7 @@ import { startDrone, bell, getCtx } from '../audio.js';
 import { store } from '../store.js';
 import { fromMidi, nameIt, nameEn, midiToFreq, fingeringsFor } from '../music.js';
 import { session } from '../session.js';
+import { installCard } from './installCard.js';
 
 // ------------------------------------------------------------ Menu "Altro"
 export function mountMore(root) {
@@ -14,7 +15,7 @@ export function mountMore(root) {
       item('#/respiro', '🫁', 'Respirazione', 'Esercizi guidati per capacità e controllo dell\'aria.'),
       item('#/trasposizione', '🔁', 'Trasposizione', 'Da suono reale (pianoforte, chitarra) a tromba in Si♭ e viceversa.'),
       item('#/consigli', '🧰', 'Consigli e cura dello strumento', 'Postura, imboccatura, riposo, pulizia e olio dei pistoni.'),
-      item('#/impostazioni', '⚙️', 'Impostazioni', 'Livello, nomi delle note, La di riferimento.'),
+      item('#/impostazioni', '⚙️', 'Impostazioni', 'Livello, nomi delle note, La di riferimento, installa l\'app.'),
     )),
   );
 }
@@ -247,10 +248,9 @@ export function mountSettings(root) {
         h('span', {}, a4, ' Hz'),
         h('button', { class: 'btn btn-round sm', onclick: () => { store.setSetting('a4', Math.min(446, store.settings().a4 + 1)); a4.textContent = store.settings().a4; } }, '+'))),
     ),
+    installCard(),
     h('section', { class: 'card' },
-      h('h2', {}, 'Installa l\'app'),
-      h('p', { class: 'muted small' }, 'Su iPhone: apri in Safari, tocca Condividi → "Aggiungi alla schermata Home". Su Android: menu di Chrome → "Installa app". Una volta installata funziona anche senza internet.'),
-      h('h2', { class: 'mt' }, 'Dati'),
+      h('h2', {}, 'Dati'),
       h('p', { class: 'muted small' }, 'Il diario di studio resta solo su questo dispositivo, nel browser. Nessun dato viene inviato altrove.'),
       h('button', { class: 'btn btn-danger', onclick: () => { if (confirm('Cancellare diario e impostazioni?')) { session.reset(); store.reset(); toast('Dati cancellati'); location.hash = '#/'; } } }, 'Cancella tutti i dati')),
     h('p', { class: 'muted small center' }, 'Pistoni · fatto con ♥ per chi suona la tromba'),

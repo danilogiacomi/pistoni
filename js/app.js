@@ -1,3 +1,4 @@
+import './install.js';
 import { h, icon, fmtTime } from './ui.js';
 import { unlockAudioOnGesture } from './audio.js';
 import { session } from './session.js';

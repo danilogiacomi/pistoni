@@ -1,5 +1,5 @@
 // Service worker: app shell offline (cache-first) con aggiornamento in background.
-const VERSION = 'pistoni-v1';
+const VERSION = 'pistoni-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,8 @@ const ASSETS = [
   './css/app.css',
   './vendor/vexflow-bravura.js',
   './js/app.js',
+  './js/install.js',
+  './js/views/installCard.js',
   './js/ui.js',
   './js/audio.js',
   './js/music.js',

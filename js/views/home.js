@@ -2,6 +2,7 @@ import { h, icon, fmtTime, fmtMinutes } from '../ui.js';
 import { store, fmt, today } from '../store.js';
 import { session } from '../session.js';
 import { keyOfTheDay, keyLabel } from '../exercises.js';
+import { installCard } from './installCard.js';
 
 export function routineSteps(level) {
   const k = keyOfTheDay();
@@ -77,6 +78,7 @@ export function mount(root) {
   }));
   updateProgress();
   const totalMin = steps.reduce((a, x) => a + x.min, 0);
+  const inst = installCard({ compact: true });
 
   root.append(
     h('section', { class: 'hero card' },
@@ -92,6 +94,8 @@ export function mount(root) {
       timerBtn,
       timerSub,
     ),
+
+    inst,
 
     h('section', { class: 'card' },
       h('div', { class: 'card-head' },
@@ -118,7 +122,7 @@ export function mount(root) {
     ),
   );
 
-  return () => off();
+  return () => { off(); inst.cleanup?.(); };
 }
 
 function quick(href, ic, title, sub) {
