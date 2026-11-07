@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pistoni · tromba</title>
+  <meta name="description" content="Pistoni: accordatore, metronomo, diteggiature, esercizi quotidiani e routine di studio per chi suona la tromba.">
+  <meta name="theme-color" content="#11151f" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f7f2e7" media="(prefers-color-scheme: light)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pistoni">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="Pistoni, home">
+      <img src="icons/icon.svg" alt="" width="28" height="28">
+      <span>Pistoni</span>
+    </a>
+    <button id="session-pill" class="session-pill" hidden aria-label="Cronometro di studio: tocca per mettere in pausa o riprendere">
+      <i class="dot"></i><span>0:00</span>
+    </button>
+    <a class="topbar-more" href="#/altro" aria-label="Altri strumenti">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+    </a>
+  </header>
+  <main id="view" class="view"></main>
+  <nav id="tabs" class="tabs" aria-label="Sezioni"></nav>
+  <noscript>Per usare Pistoni serve JavaScript.</noscript>
+  <script src="vendor/vexflow-bravura.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
