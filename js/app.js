@@ -8,6 +8,7 @@ import * as fingerings from './views/fingerings.js';
 import * as tuner from './views/tuner.js';
 import * as metronome from './views/metronome.js';
 import * as tools from './views/tools.js';
+import * as recorder from './views/recorder.js';
 
 const routes = [
   { re: /^\/?$/, tab: 'home', mount: (el) => home.mount(el) },
@@ -18,6 +19,7 @@ const routes = [
   { re: /^\/metronomo$/, tab: 'metronomo', mount: (el) => metronome.mount(el) },
   { re: /^\/altro$/, tab: 'altro', mount: (el) => tools.mountMore(el) },
   { re: /^\/bordone$/, tab: 'altro', mount: (el) => tools.mountDrone(el) },
+  { re: /^\/registrazioni$/, tab: 'altro', mount: (el) => recorder.mountRecorder(el) },
   { re: /^\/respiro$/, tab: 'home', mount: (el) => tools.mountBreath(el) },
   { re: /^\/trasposizione$/, tab: 'altro', mount: (el) => tools.mountTranspose(el) },
   { re: /^\/consigli$/, tab: 'altro', mount: (el) => tools.mountTips(el) },

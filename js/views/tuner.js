@@ -1,13 +1,10 @@
 import { h, icon, valvesGraphic, segmented } from '../ui.js';
-import { getCtx } from '../audio.js';
-import { detectPitch } from '../pitch.js';
+import { createPitchTracker, micErrorMessage } from '../mic.js';
 import { store } from '../store.js';
 import { freqToMidiFloat, fromMidi, nameIt, nameEn, TRANSPOSE, fingeringsFor, RANGE_LOW, RANGE_HIGH } from '../music.js';
 
 export function mount(root) {
-  let stream = null;
-  let source = null;
-  let analyser = null;
+  let tracker = null;
   let raf = 0;
   let running = false;
   const hist = []; // {t, cents, midi}
@@ -78,39 +75,31 @@ export function mount(root) {
 
   async function start() {
     try {
-      const c = getCtx();
-      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
-      source = c.createMediaStreamSource(stream);
-      analyser = c.createAnalyser();
-      analyser.fftSize = 2048;
-      source.connect(analyser);
+      tracker = await createPitchTracker();
       running = true;
       setBtn();
       statusEl.textContent = 'In ascolto… suona una nota.';
       loop();
     } catch (e) {
-      statusEl.textContent = 'Impossibile accedere al microfono. Controlla i permessi del browser.';
+      statusEl.textContent = micErrorMessage(e);
     }
   }
 
   function stop() {
     running = false;
     cancelAnimationFrame(raf);
-    try { source?.disconnect(); } catch (e) { /* */ }
-    stream?.getTracks().forEach((t) => t.stop());
-    stream = null;
+    tracker?.release();
+    tracker = null;
     setBtn();
     statusEl.textContent = 'Accordatore fermo.';
   }
 
-  const buf = new Float32Array(2048);
   let frame = 0;
   function loop() {
     if (!running) return;
     raf = requestAnimationFrame(loop);
     if (frame++ % 2) { draw(); return; }
-    analyser.getFloatTimeDomainData(buf);
-    const { freq, clarity } = detectPitch(buf, getCtx().sampleRate);
+    const { freq, clarity } = tracker.read();
     const now = performance.now();
     const st = store.settings();
     if (freq > 0 && clarity > 0.8) {

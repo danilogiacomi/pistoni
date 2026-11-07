@@ -334,6 +334,43 @@ p { margin: 6px 0; }
 .breath-sub { font-size: 1.4rem; font-weight: 800; min-height: 1.6em; font-variant-numeric: tabular-nums; }
 .big-time { font-size: 2.6rem; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; }
 
+/* ---------- Verifica ---------- */
+:root { --c-ok: #2f9e63; --c-near: #d38b1d; --c-bad: #d0473a; --c-miss: #9a9384; }
+.c-ok { color: var(--c-ok); } .c-near { color: var(--c-near); } .c-bad { color: var(--c-bad); } .c-miss { color: var(--c-miss); }
+.staff .vf-stavenote.v-ok path, .staff .vf-stavenote.v-ok rect, .staff .vf-stavenote.v-ok text { fill: #2f9e63 !important; stroke: #2f9e63 !important; }
+.staff .vf-stavenote.v-near path, .staff .vf-stavenote.v-near rect, .staff .vf-stavenote.v-near text { fill: #d38b1d !important; stroke: #d38b1d !important; }
+.staff .vf-stavenote.v-bad path, .staff .vf-stavenote.v-bad rect, .staff .vf-stavenote.v-bad text { fill: #d0473a !important; stroke: #d0473a !important; }
+.staff .vf-stavenote.v-miss path, .staff .vf-stavenote.v-miss rect, .staff .vf-stavenote.v-miss text { fill: #b5ad9c !important; stroke: #b5ad9c !important; }
+.verify-hint { margin-top: 10px; }
+.live { position: sticky; top: 0; z-index: 1; margin: 0 6px 6px; padding: 6px 12px; border-radius: 10px; background: #efe6d2; color: #1d1a15; font-weight: 700; font-variant-numeric: tabular-nums; text-align: center; }
+.live.ok { background: #d6efdf; }
+.live.near { background: #f6e3c0; }
+.result-card { border-color: var(--accent); }
+.result-top { display: flex; align-items: center; gap: 16px; }
+.result-score { font-size: 3.2rem; font-weight: 800; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+.result-stars { font-size: 1.5rem; }
+.result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0 6px; }
+.r-cell { background: var(--bg-2); border-radius: 12px; padding: 8px 4px; text-align: center; }
+.r-n { font-size: 1.5rem; font-weight: 800; }
+.r-l { font-size: 0.72rem; color: var(--muted); line-height: 1.2; }
+
+/* ---------- Registratore ---------- */
+.rec-card { text-align: center; position: relative; }
+.rec-btn { width: 88px; height: 88px; border-radius: 50%; padding: 0; margin: 14px auto 10px; border: 4px solid var(--line); background: var(--card); display: grid; place-items: center; }
+.rec-btn-in { width: 56px; height: 56px; border-radius: 50%; background: var(--bad); transition: 0.2s; }
+.rec-btn.on .rec-btn-in { width: 32px; height: 32px; border-radius: 8px; }
+.rec-dot { position: absolute; top: 16px; right: 16px; width: 12px; height: 12px; border-radius: 50%; background: transparent; }
+.rec-dot.on { background: var(--bad); animation: pulse 1.2s infinite; }
+.rec-list { display: flex; flex-direction: column; gap: 4px; }
+.rec-item { padding: 12px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.rec-item:first-child { border-top: 0; }
+.rec-title { font-weight: 700; }
+.rec-audio { width: 100%; height: 40px; }
+.rec-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip-btn.danger { color: var(--bad); }
+.rec-inline:not(:empty) { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.rec-inline .rec-item { border-top: 0; }
+
 /* ---------- Install ---------- */
 .install-card { border-color: var(--accent); }
 .install-head { display: flex; gap: 12px; align-items: center; }

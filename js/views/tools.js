@@ -11,6 +11,7 @@ export function mountMore(root) {
   root.append(
     h('header', { class: 'page-head' }, h('h1', {}, 'Altri strumenti')),
     h('section', { class: 'card' }, h('div', { class: 'ex-list' },
+      item('#/registrazioni', '🎙', 'Registratore', 'Registrati, riascoltati e manda le registrazioni al tuo insegnante.'),
       item('#/bordone', '🎵', 'Bordone', 'Una nota tenuta di sottofondo per allenare l\'intonazione.'),
       item('#/respiro', '🫁', 'Respirazione', 'Esercizi guidati per capacità e controllo dell\'aria.'),
       item('#/trasposizione', '🔁', 'Trasposizione', 'Da suono reale (pianoforte, chitarra) a tromba in Si♭ e viceversa.'),

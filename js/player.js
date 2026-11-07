@@ -57,6 +57,7 @@ export function createPlayer({ onNote, onEnd, onBeat }) {
     }
 
     let pos = t;
+    const timeline = [];
     notes.forEach((n, i) => {
       const dur = (BEATS[n.dur] ?? 1) * spb;
       if (!n.rest && opts.sound) {
@@ -64,6 +65,7 @@ export function createPlayer({ onNote, onEnd, onBeat }) {
         voices.push(brassNote(writtenToFreq(n.midi, a4, inst), pos, legato, { volume: 0.3 }));
       }
       const at = pos;
+      timeline.push({ i, start: pos, end: pos + dur, midi: n.midi, rest: !!n.rest });
       schedule(at, () => playing && onNote?.(i));
       pos += dur;
     });
@@ -73,8 +75,7 @@ export function createPlayer({ onNote, onEnd, onBeat }) {
       if (opts.loop) play(notes, { ...opts, countIn: 0 });
       else { stop(); onEnd?.(); }
     }, (pos - c.currentTime) * 1000);
-    // libera la memoria delle voci concluse
-    timeouts.push(setTimeout(() => { voices = voices.slice(-8); }, (pos - c.currentTime) * 1000 + 200));
+    return { timeline, instrument: inst };
   }
 
   return { play, stop, isPlaying: () => playing };

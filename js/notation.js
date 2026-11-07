@@ -137,8 +137,16 @@ export function renderStaff(container, notes, opts = {}) {
   });
   const groups = els.every(Boolean) ? els : Array.from(svg.querySelectorAll('.vf-stavenote'));
   let last = -1;
+  const MARKS = ['v-ok', 'v-near', 'v-bad', 'v-miss'];
   return {
     count: allNotes.length,
+    mark(i, cls) {
+      const g = groups[i];
+      if (!g) return;
+      g.classList.remove(...MARKS);
+      if (cls) g.classList.add('v-' + cls);
+    },
+    clearMarks() { groups.forEach((g) => g?.classList.remove(...MARKS)); },
     highlight(i) {
       if (groups[last]) groups[last].classList.remove('on');
       if (groups[i]) {

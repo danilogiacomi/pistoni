@@ -115,8 +115,8 @@ export function mount(root) {
     ),
 
     h('section', { class: 'grid-2' },
-      quick('#/accordatore', 'tuner', 'Accordatore', 'Intonazione e stabilità'),
-      quick('#/metronomo', 'metro', 'Metronomo', 'Tempo e allenatore'),
+      quick('#/esercizi/note-lunghe?verifica=1', 'tuner', 'Suona e verifica', 'L\'app ti ascolta e ti dà un voto'),
+      quick('#/registrazioni', 'mic', 'Registratore', 'Registrati e riascoltati'),
       quick('#/diteggiature', 'valves', 'Diteggiature', 'Tabella e quiz'),
       quick('#/altro', 'more', 'Altri strumenti', 'Bordone, respiro, consigli'),
     ),

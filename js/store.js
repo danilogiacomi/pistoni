@@ -13,6 +13,7 @@ const defaults = {
   done: {}, // { 'YYYY-MM-DD': [stepId,...] }
   metronome: { bpm: 80, beats: 4, sub: 1, accent: true },
   quizBest: 0,
+  best: {}, // punteggi migliori di "Suona e verifica"
 };
 
 let state;
