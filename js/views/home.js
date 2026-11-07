@@ -1,22 +1,63 @@
-import { h, icon, fmtTime, fmtMinutes } from '../ui.js';
+import { h, icon, fmtTime, fmtMinutes, segmented } from '../ui.js';
 import { store, fmt, today } from '../store.js';
 import { session } from '../session.js';
 import { keyOfTheDay, keyLabel } from '../exercises.js';
 import { installCard } from './installCard.js';
 
+export const LEVELS = {
+  base: { label: 'Base', who: 'Suoni da poco (primi 1-2 anni): registro fino al Do5, colpo di lingua semplice.' },
+  medio: { label: 'Medio', who: 'Leggi bene e suoni in banda o in orchestra giovanile: fino al Sol5, scale su 2 ottave, doppio colpo.' },
+  avanzato: { label: 'Avanzato', who: 'Conservatorio, professionisti o amatori esperti: fino al Do6 e oltre, flessibilità acuta, triplo colpo, tempi veloci.' },
+};
+
 export function routineSteps(level) {
   const k = keyOfTheDay();
+  const km = keyOfTheDay(new Date(), true);
   const kStr = `${k[0]}${k[1]}`;
-  const lip = level === 'base' ? '23' : level === 'medio' ? '234' : '2345';
-  const lt = level === 'avanzato' ? 'ventaglio' : 'discendente';
+  const kmStr = `${km[0]}${km[1]}`;
+  const ex = (id, q) => `#/esercizi/${id}?${new URLSearchParams(q)}`;
+
+  if (level === 'avanzato') {
+    return [
+      { id: 'a-respiro', title: 'Respirazione', min: 2, route: '#/respiro?preset=rapido', desc: 'Respiro rapido e profondo, come in un brano.' },
+      { id: 'a-bocchino', title: 'Buzzing al bocchino', min: 2, route: ex('bocchino', { variant: 'sirena' }), desc: 'Sirene su tutto il registro.' },
+      { id: 'a-lunghe', title: 'Note lunghe con verifica', min: 5, route: ex('note-lunghe', { variant: 'ventaglio', verifica: 1 }), desc: 'A ventaglio, ppp, controlla stabilità e intonazione.' },
+      { id: 'a-legati', title: 'Legati 2°–5° armonico', min: 4, route: ex('legati', { pattern: '2345', dur: '8', bpm: 72 }), desc: 'In crome, ♩ = 72. Passaggi senza "scalini".' },
+      { id: 'a-flex', title: 'Flessibilità acuta (4°–8°)', min: 4, route: ex('legati', { pattern: '4568', dur: 'q', bpm: 72 }), desc: 'Fino al Do6 su tutte le posizioni, ♩ = 72.' },
+      { id: 'a-trilli', title: 'Trilli labiali', min: 3, route: ex('legati', { pattern: 't56', bpm: 66 }), desc: 'Mi–Sol veloci senza pistoni. Poi prova 6°–8°.' },
+      { id: 'a-terze', title: `${keyLabel(k)} per terze`, min: 5, route: ex('scale', { key: kStr, octaves: 2, pattern: 'terze', dur: '8', bpm: 100 }), desc: 'Due ottave in crome, ♩ = 100. Tonalità del giorno.' },
+      { id: 'a-minore', title: `${keyLabel(km, true)} melodica`, min: 4, route: ex('scale', { key: kmStr, type: 'minorMel', octaves: 2, dur: '8', bpm: 108 }), desc: 'Due ottave, ♩ = 108.' },
+      { id: 'a-cromatica', title: 'Cromatica Fa#3 – Do6', min: 3, route: ex('cromatica', { from: '54-84', dur: '8', bpm: 100 }), desc: 'Tutta l\'estensione in crome, ♩ = 100.' },
+      { id: 'a-triplo', title: 'Triplo colpo nel registro acuto', min: 4, route: ex('articolazione', { type: 'triple', notes: 'alto', bpm: 100 }), desc: 'Ta-ta-ka su Sol4–Sol5, ♩ = 100.' },
+      { id: 'a-agilita', title: 'Studio tecnico (stile Clarke)', min: 5, route: ex('agilita', { pattern: '13535431', from: '72', bpm: 104 }), desc: 'Da Do5 in giù, ♩ = 104, un respiro per gruppo.' },
+      { id: 'a-acuto', title: 'Registro acuto fino al Mi6', min: 4, route: ex('acuto', { top: '88', bpm: 88 }), desc: 'Fermati alla prima nota forzata.' },
+      { id: 'a-repertorio', title: 'Studi e repertorio', min: 15, route: '#/registrazioni', desc: 'Arban, Charlier, passi d\'orchestra: registrati e riascoltati.' },
+    ];
+  }
+  if (level === 'medio') {
+    return [
+      { id: 'm-respiro', title: 'Respirazione', min: 2, route: '#/respiro', desc: 'Capacità polmonare ed espirazione costante.' },
+      { id: 'm-bocchino', title: 'Buzzing al bocchino', min: 3, route: ex('bocchino', { variant: 'sirena' }), desc: 'Sirene: dal grave all\'acuto senza interruzioni.' },
+      { id: 'm-lunghe', title: 'Note lunghe con verifica', min: 5, route: ex('note-lunghe', { variant: 'ventaglio', verifica: 1 }), desc: 'A ventaglio: l\'app controlla l\'intonazione.' },
+      { id: 'm-legati', title: 'Legati 2°–4° armonico', min: 4, route: ex('legati', { pattern: '234', dur: 'q', bpm: 72 }), desc: 'Su tutte le 7 posizioni, ♩ = 72.' },
+      { id: 'm-legati2', title: 'Legati 3°–5° armonico', min: 4, route: ex('legati', { pattern: '345', dur: 'q', bpm: 66 }), desc: 'Sale fino al Mi5. Aria veloce, labbra morbide.' },
+      { id: 'm-scala', title: `Scala di ${keyLabel(k)}`, min: 5, route: ex('scale', { key: kStr, octaves: 2, dur: '8', bpm: 80 }), desc: 'Due ottave in crome, ♩ = 80. Tonalità del giorno.' },
+      { id: 'm-arpeggi', title: 'Arpeggi', min: 3, route: ex('arpeggi', { key: kStr, bpm: 84 }), desc: 'Nella tonalità del giorno.' },
+      { id: 'm-cromatica', title: 'Cromatica Sol3 – Sol5', min: 3, route: ex('cromatica', { from: '55-79', dur: '8', bpm: 72 }), desc: 'Coordinazione lingua-dita.' },
+      { id: 'm-doppio', title: 'Doppio colpo di lingua', min: 4, route: ex('articolazione', { type: 'double', bpm: 72 }), desc: 'Ta-ka regolari, ♩ = 72.' },
+      { id: 'm-agilita', title: 'Studio tecnico (stile Clarke)', min: 5, route: ex('agilita', { pattern: '12345432', bpm: 80 }), desc: 'Legato, ♩ = 80.' },
+      { id: 'm-acuto', title: 'Registro acuto fino al La5', min: 3, route: ex('acuto', { top: '81', bpm: 80 }), desc: 'Senza forzare: aria, non pressione.' },
+      { id: 'm-repertorio', title: 'Studi e brani', min: 10, route: '#/metronomo', desc: 'Applica tutto su uno studio o un brano.' },
+    ];
+  }
   return [
-    { id: 'respiro', title: 'Respirazione', min: 2, route: '#/respiro', desc: 'Respiri profondi e rilassati: l\'aria è il "carburante" della tromba.' },
+    { id: 'respiro', title: 'Respirazione', min: 2, route: '#/respiro?preset=calma', desc: 'Respiri profondi e rilassati: l\'aria è il "carburante" della tromba.' },
     { id: 'bocchino', title: 'Buzzing al bocchino', min: 3, route: '#/esercizi/bocchino', desc: 'Risveglia le labbra con il solo bocchino.' },
-    { id: 'note-lunghe', title: 'Note lunghe', min: 5, route: `#/esercizi/note-lunghe?variant=${lt}`, desc: 'Suono fermo, rotondo e intonato.' },
-    { id: 'legati', title: 'Legati labiali', min: 5, route: `#/esercizi/legati?pattern=${lip}`, desc: 'Flessibilità tra gli armonici, senza lingua.' },
-    { id: 'scale', title: `Scala di ${keyLabel(k)}`, min: 5, route: `#/esercizi/scale?key=${kStr}&octaves=${level === 'base' ? 1 : 2}`, desc: 'Tonalità del giorno: ogni giorno una diversa.' },
-    { id: 'articolazione', title: 'Articolazione', min: 4, route: `#/esercizi/articolazione?type=${level === 'base' ? 'single' : 'double'}`, desc: 'Colpo di lingua pulito e regolare.' },
-    { id: 'agilita', title: 'Agilità', min: 4, route: `#/esercizi/agilita${level === 'base' ? '?pattern=12321' : ''}`, desc: 'Dita veloci e coordinate con la lingua.' },
+    { id: 'note-lunghe', title: 'Note lunghe', min: 5, route: ex('note-lunghe', { variant: 'discendente' }), desc: 'Suono fermo, rotondo e intonato.' },
+    { id: 'legati', title: 'Legati labiali', min: 5, route: ex('legati', { pattern: '23', dur: 'h' }), desc: 'Flessibilità tra gli armonici, senza lingua.' },
+    { id: 'scale', title: `Scala di ${keyLabel(k)}`, min: 5, route: ex('scale', { key: kStr, octaves: 1, bpm: 72 }), desc: 'Tonalità del giorno: ogni giorno una diversa.' },
+    { id: 'articolazione', title: 'Articolazione', min: 4, route: ex('articolazione', { type: 'single', bpm: 72 }), desc: 'Colpo di lingua pulito e regolare.' },
+    { id: 'agilita', title: 'Agilità', min: 4, route: ex('agilita', { pattern: '12321', bpm: 72 }), desc: 'Dita veloci e coordinate con la lingua.' },
     { id: 'repertorio', title: 'Brani e studio libero', min: 10, route: '#/metronomo', desc: 'Applica tutto su un brano, con il metronomo.' },
   ];
 }
@@ -80,7 +121,23 @@ export function mount(root) {
   const totalMin = steps.reduce((a, x) => a + x.min, 0);
   const inst = installCard({ compact: true });
 
+  const rerender = () => window.dispatchEvent(new HashChangeEvent('hashchange'));
+  const levelPicker = segmented(Object.entries(LEVELS).map(([k2, v]) => [k2, v.label]), s.level, (v) => {
+    store.setSetting('level', v);
+    store.setSetting('levelChosen', true);
+    rerender();
+  }, 'seg-wide');
+
+  const welcome = s.levelChosen ? null : h('section', { class: 'card welcome' },
+    h('h2', {}, 'Che livello sei?'),
+    h('p', { class: 'muted small' }, 'La routine, l\'estensione e la velocità degli esercizi si adattano al tuo livello. Puoi cambiarlo quando vuoi.'),
+    h('div', { class: 'level-cards' }, Object.entries(LEVELS).map(([k2, v]) => h('button', {
+      class: 'level-card' + (k2 === s.level ? ' active' : ''),
+      onclick: () => { store.setSetting('level', k2); store.setSetting('levelChosen', true); rerender(); },
+    }, h('span', { class: 'level-t' }, v.label), h('span', { class: 'level-d' }, v.who)))));
+
   root.append(
+    welcome,
     h('section', { class: 'hero card' },
       h('div', { class: 'hero-top' },
         h('div', {},
@@ -100,8 +157,10 @@ export function mount(root) {
     h('section', { class: 'card' },
       h('div', { class: 'card-head' },
         h('h2', {}, 'Routine di oggi'),
-        h('span', { class: 'chip' }, `~${totalMin} min · livello ${s.level}`)),
-      h('p', { class: 'muted small' }, 'Una sequenza classica di riscaldamento e studio. Tocca un esercizio per aprirlo, poi spuntalo quando hai finito. Regola d\'oro: riposa quanto suoni.'),
+        h('span', { class: 'chip' }, `~${totalMin} min · ${steps.length} esercizi`)),
+      levelPicker,
+      h('p', { class: 'muted small level-who' }, LEVELS[s.level].who),
+      h('p', { class: 'muted small' }, 'Tocca un esercizio per aprirlo con tempo e impostazioni già pronti, poi spuntalo. Regola d\'oro: riposa quanto suoni.'),
       bar, progress,
       stepList,
     ),

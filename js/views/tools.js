@@ -70,13 +70,13 @@ export function mountDrone(root) {
 }
 
 // ------------------------------------------------------------ Respirazione
-export function mountBreath(root) {
+export function mountBreath(root, params = new URLSearchParams()) {
   const presets = {
     calma: { label: 'Relax', inhale: 4, hold: 0, exhale: 6, rounds: 6, desc: 'Respiri lenti per sciogliere le tensioni prima di suonare.' },
     capacita: { label: 'Capacità', inhale: 4, hold: 2, exhale: 12, rounds: 5, desc: 'Inspira a fondo (pancia, fianchi, schiena), espira lentamente su "ssss" in modo costante.' },
     rapido: { label: 'Rapido', inhale: 1, hold: 0, exhale: 8, rounds: 6, desc: 'Inspira velocemente dalla bocca come durante un brano, poi espira lungo e costante.' },
   };
-  let preset = 'capacita';
+  let preset = presets[params.get('preset')] ? params.get('preset') : 'capacita';
   let running = false;
   let timer = null;
 
@@ -241,7 +241,7 @@ export function mountSettings(root) {
   root.append(
     h('header', { class: 'page-head' }, h('a', { class: 'back', href: '#/altro' }, icon('back'), 'Altro'), h('h1', {}, 'Impostazioni')),
     h('section', { class: 'card' },
-      row('Livello', 'Adatta l\'estensione e la difficoltà degli esercizi e della routine.', segmented([['base', 'Base'], ['medio', 'Medio'], ['avanzato', 'Avanzato']], s.level, (v) => store.setSetting('level', v))),
+      row('Livello', 'Adatta l\'estensione e la difficoltà degli esercizi e della routine.', segmented([['base', 'Base'], ['medio', 'Medio'], ['avanzato', 'Avanzato']], s.level, (v) => { store.setSetting('level', v); store.setSetting('levelChosen', true); })),
       row('Nomi delle note', null, segmented([['it', 'Do Re Mi'], ['en', 'C D E']], s.names, (v) => store.setSetting('names', v))),
       row('Strumento', 'La maggior parte degli studenti suona la tromba in Si♭.', segmented([['Bb', 'Tromba in Si♭'], ['C', 'Tromba in Do']], s.instrument, (v) => store.setSetting('instrument', v))),
       row('La di riferimento', 'Usato da accordatore, bordone e suoni guida.', h('div', { class: 'stepper' },

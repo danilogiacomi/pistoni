@@ -1,5 +1,5 @@
 // Service worker: app shell offline (cache-first) con aggiornamento in background.
-const VERSION = 'pistoni-v3';
+const VERSION = 'pistoni-v4';
 const ASSETS = [
   './',
   './index.html',

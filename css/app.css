@@ -219,6 +219,16 @@ p { margin: 6px 0; }
 .quick-ic { width: 34px; height: 34px; padding: 6px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); flex: none; }
 .quick-t { font-weight: 700; }
 
+/* livello */
+.level-who { margin-top: 8px; }
+.welcome { border-color: var(--accent); }
+.level-cards { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.level-card { text-align: left; border: 1px solid var(--line); background: var(--bg-2); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+.level-card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.level-t { font-weight: 800; }
+.level-d { font-size: 0.86rem; color: var(--muted); }
+.card .seg-wide { margin-top: 10px; }
+
 /* ---------- Exercise list ---------- */
 .cat-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .ex-list { display: flex; flex-direction: column; }

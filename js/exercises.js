@@ -54,7 +54,7 @@ export const CATALOG = [
           notes.push(N(67, 'h', valvesTxt(67)), N(67 - d, 'h', valvesTxt(67 - d)), R('w'));
         }
       } else {
-        for (let m = 67; m <= Math.min(high, 79); m++) notes.push(N(m, 'w', valvesTxt(m)), R('w'));
+        for (let m = 67; m <= high; m++) notes.push(N(m, 'w', valvesTxt(m)), R('w'));
       }
       return notes;
     },
@@ -67,28 +67,41 @@ export const CATALOG = [
     desc: 'Passa da un armonico all\'altro SENZA cambiare diteggiatura e senza colpo di lingua. Cambia la velocità dell\'aria (non la pressione!) e la forma della bocca ("ah-ii"). Lo stesso schema si ripete su tutte le 7 posizioni.',
     tips: ['Inizia lento: il passaggio tra le note deve essere pulito, senza "scalini".', 'Se senti fatica, fermati e riposa.', 'Sotto le note trovi i pistoni da premere.'],
     options: [
-      { id: 'pattern', label: 'Schema', type: 'select', values: [['23', 'Do–Sol (2°–3° armonico)'], ['234', 'Do–Sol–Do (2°–4°)'], ['345', 'Sol–Do–Mi (3°–5°)'], ['456', 'Do–Mi–Sol (4°–6°)'], ['2345', 'Do–Sol–Do–Mi (2°–5°)']] },
+      { id: 'pattern', label: 'Schema', type: 'select', values: [
+        ['23', 'Do–Sol (2°–3° armonico)'], ['234', 'Do–Sol–Do (2°–4°)'], ['345', 'Sol–Do–Mi (3°–5°)'],
+        ['2345', 'Do–Sol–Do–Mi (2°–5°)'], ['24', 'Salto d\'ottava Do–Do (2°–4°)'], ['456', 'Do–Mi–Sol (4°–6°)'],
+        ['3456', 'Sol–Do–Mi–Sol (3°–6°)'], ['4568', 'Do–Mi–Sol–Do (4°–8°, avanzato)'],
+        ['t45', 'Trillo labiale Do–Mi (4°–5°)'], ['t56', 'Trillo labiale Mi–Sol (5°–6°)'], ['t68', 'Trillo labiale Sol–Do (6°–8°, avanzato)']] },
       { id: 'dur', label: 'Valori', type: 'select', values: [['h', 'Minime (lento)'], ['q', 'Semiminime'], ['8', 'Crome (veloce)']] },
     ],
     tempo: 66,
     build({ pattern = '23', dur = 'h' }) {
-      const parts = pattern.split('').map(Number);
-      const up = parts.map((p) => [2, 3, 4, 5, 6].indexOf(p));
-      const seqIdx = [...up, ...up.slice(0, -1).reverse()];
+      const trill = pattern.startsWith('t');
+      let seqP;
+      if (trill) {
+        const [a, b] = pattern.slice(1).split('').map(Number);
+        seqP = [a, b, a, b, a, b, a, b, a];
+      } else {
+        const parts = pattern.split('').map(Number);
+        seqP = [...parts, ...parts.slice(0, -1).reverse()];
+      }
       const notes = [];
       // ogni posizione produce un accordo maggiore: ortografia come scala maggiore della fondamentale
       const ROOTS = { '': ['C', 0], 2: ['B', 0], 1: ['B', -1], 12: ['A', 0], 23: ['A', -1], 13: ['G', 0], 123: ['F', 1] };
-      const DEG = { 2: 0, 3: 4, 4: 7, 5: 9, 6: 11 }; // indice nella scala maggiore di 2 ottave
+      const DEG = { 2: 0, 3: 4, 4: 7, 5: 9, 6: 11, 8: 14 }; // indice nella scala maggiore di 2 ottave
       for (const c of VALVE_COMBOS.filter((x) => !(x.v.length === 1 && x.v[0] === 3))) {
         const [rl, ra] = ROOTS[c.v.join('')];
-        const series = harmonicSeries(c.v, [2, 3, 4, 5, 6]);
+        const series = harmonicSeries(c.v, [2]);
         const sc = buildScale(rl, ra, 'major', Math.floor((series[0] - (LETTER_PC[rl] + ra)) / 12) - 1, 2);
-        seqIdx.forEach((si, k) => {
-          const p = [2, 3, 4, 5, 6][si];
-          notes.push(S(sc[DEG[p]], dur, k === 0 ? (c.v.join('') || '0') : undefined));
-        });
-        // nota finale lunga per respirare
-        notes.push(R(dur === 'h' ? 'h' : dur === 'q' ? 'q' : '8'));
+        const label = c.v.join('') || '0';
+        if (trill) {
+          seqP.forEach((p, k) => notes.push(S(sc[DEG[p]], k === seqP.length - 1 ? 'q' : '16', k === 0 ? label : undefined)));
+          notes.push(R('q'));
+        } else {
+          seqP.forEach((p, k) => notes.push(S(sc[DEG[p]], dur, k === 0 ? label : undefined)));
+          // pausa per respirare
+          notes.push(R(dur === 'h' ? 'h' : dur === 'q' ? 'q' : '8'));
+        }
       }
       return notes;
     },
@@ -104,11 +117,12 @@ export const CATALOG = [
       { id: 'key', label: 'Tonalità', type: 'key' },
       { id: 'type', label: 'Tipo', type: 'select', values: Object.entries(SCALE_TYPES).map(([k, v]) => [k, v.label]) },
       { id: 'octaves', label: 'Ottave', type: 'select', values: [['1', '1 ottava'], ['2', '2 ottave']] },
+      { id: 'pattern', label: 'Disegno', type: 'select', values: [['lineare', 'Scala semplice'], ['terze', 'Per terze']] },
       { id: 'dur', label: 'Valori', type: 'select', values: [['q', 'Semiminime'], ['8', 'Crome']] },
       { id: 'fing', label: 'Pistoni sotto le note', type: 'select', values: [['1', 'Mostra'], ['0', 'Nascondi']] },
     ],
     tempo: 80,
-    build({ key, type = 'major', octaves = '1', dur = 'q', fing = '1' }) {
+    build({ key, type = 'major', octaves = '1', pattern = 'lineare', dur = 'q', fing = '1' }) {
       const minor = type !== 'major';
       const [l, a] = key ? parseKey(key) : keyOfTheDay(new Date(), minor);
       let oct = Number(octaves);
@@ -122,7 +136,11 @@ export const CATALOG = [
         const nat = buildScale(sc[0].letter, sc[0].acc, 'minorNat', sc[0].octave, oct);
         downNotes = nat.slice(0, -1).reverse();
       }
-      const seq = [...upNotes, ...downNotes];
+      let seq = [...upNotes, ...downNotes];
+      if (pattern === 'terze') {
+        const thirds = (arr) => { const out = []; for (let i = 0; i + 2 < arr.length; i++) out.push(arr[i], arr[i + 2]); return out; };
+        seq = [...thirds(upNotes), ...thirds([upNotes[upNotes.length - 1], ...downNotes]).slice(1)];
+      }
       const notes = seq.slice(0, -1).map((n) => S(n, dur, fing === '1' ? valvesTxt(n.midi) : undefined));
       const lastN = seq[seq.length - 1];
       notes.push(S(lastN, 'h', fing === '1' ? valvesTxt(lastN.midi) : undefined));
@@ -214,11 +232,11 @@ export const CATALOG = [
     tips: ['Esercita il "ka" anche da solo: è la sillaba più debole.', 'Le note devono sembrare tutte uguali.'],
     options: [
       { id: 'type', label: 'Tipo', type: 'select', values: [['single', 'Colpo semplice (ta)'], ['double', 'Doppio colpo (ta-ka)'], ['triple', 'Triplo colpo (ta-ta-ka)']] },
-      { id: 'notes', label: 'Note', type: 'select', values: [['arp', 'Do4 – Mi4 – Sol4 – Do5'], ['g', 'Solo Sol4'], ['c', 'Solo Do4']] },
+      { id: 'notes', label: 'Note', type: 'select', values: [['arp', 'Do4 – Mi4 – Sol4 – Do5'], ['alto', 'Sol4 – Do5 – Mi5 – Sol5'], ['g', 'Solo Sol4'], ['c', 'Solo Do4']] },
     ],
     tempo: 80,
     build({ type = 'single', notes: which = 'arp' }) {
-      const roots = which === 'g' ? [67, 67, 67, 67] : which === 'c' ? [60, 60, 60, 60] : [60, 64, 67, 72];
+      const roots = which === 'g' ? [67, 67, 67, 67] : which === 'c' ? [60, 60, 60, 60] : which === 'alto' ? [67, 72, 76, 79] : [60, 64, 67, 72];
       const seq = [...roots, ...roots.slice(0, -1).reverse()];
       const out = [];
       seq.forEach((m) => {
@@ -235,6 +253,30 @@ export const CATALOG = [
         }
       });
       return out;
+    },
+  },
+  {
+    id: 'acuto',
+    title: 'Registro acuto',
+    icon: '🚀',
+    cat: 'Flessibilità',
+    desc: 'Arpeggi che salgono di mezzo tono alla volta, per estendere il registro acuto poco per volta. Il segreto è la velocità dell\'aria e il sostegno degli addominali, non la pressione del bocchino sulle labbra.',
+    tips: ['Fermati alla prima nota che esce "strozzata" o forzata: il registro cresce in settimane di lavoro costante.', 'Pensa la sillaba "iii" salendo: la lingua alta accelera l\'aria.', 'Riposa almeno quanto hai suonato, e chiudi con qualche nota grave e morbida.'],
+    options: [
+      { id: 'top', label: 'Fino a', type: 'select', values: [['79', 'Sol5'], ['81', 'La5'], ['84', 'Do6'], ['86', 'Re6'], ['88', 'Mi6']] },
+    ],
+    tempo: 80,
+    build({ top = '79' }) {
+      const T = Number(top);
+      const notes = [];
+      for (let root = 60; root + 12 <= T; root++) {
+        const [l, a] = keyForPc(root % 12);
+        const oct = Math.floor((root - (LETTER_PC[l] + a)) / 12) - 1;
+        const sc = buildScale(l, a, 'major', oct, 1);
+        const [d1, d3, d5, d8] = [0, 2, 4, 7].map((d) => sc[d]);
+        notes.push(S(d1, 'q', valvesTxt(d1.midi)), S(d3, 'q'), S(d5, 'q'), S(d8, 'q', valvesTxt(d8.midi)), S(d5, 'q'), S(d3, 'q'), S(d1, 'h'), R('w'));
+      }
+      return notes;
     },
   },
   {

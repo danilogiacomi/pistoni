@@ -7,6 +7,7 @@ const defaults = {
     instrument: 'Bb', // 'Bb' | 'C'
     names: 'it', // 'it' (Do Re Mi) | 'en' (C D E)
     level: 'base', // 'base' | 'medio' | 'avanzato'
+    levelChosen: false,
     metronomeSound: 'beep',
   },
   log: {}, // { 'YYYY-MM-DD': secondi }
